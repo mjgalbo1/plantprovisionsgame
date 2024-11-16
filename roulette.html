@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Roulette Game</title>
+    <style>
+        body {
+            background-color: #f0f0f0; /* Background color */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #wheel {
+            margin-bottom: 20px;
+        }
+        #spinButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #popup, #formPopup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #popupContent, #formContent {
+            background-color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        #popupContent button, #formContent button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        #formContent input {
+            display: block;
+            margin: 10px auto;
+            padding: 8px;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="wheel" width="300" height="300"></canvas>
+<button id="spinButton">Spin</button>
+
+<div id="popup">
+    <div id="popupContent">
+        <p id="popupMessage"></p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+</div>
+
+<div id="formPopup">
+    <div id="formContent">
+        <p>Congratulations! Please enter your details:</p>
+        <input type="text" id="firstName" placeholder="First Name" required>
+        <input type="text" id="lastName" placeholder="Last Name" required>
+        <input type="email" id="email" placeholder="Email Address" required>
+        <button onclick="submitForm()">Submit</button>
+    </div>
+</div>
+
+<script>
+    const wheel = document.getElementById('wheel');
+    const ctx = wheel.getContext('2d');
+    const spinButton = document.getElementById('spinButton');
+    const slices = 10;
+    const sliceDeg = 360 / slices;
+    const spinTimeTotal = 5000; // 5 seconds
+    let startAngle = 0;
+    let spinTimeout = null;
+    let spinAngleStart = 0;
+    let spinTime = 0;
+
+    const colors = ['#FFEB3B', '#FFC107'];
+    const labels = Array(10).fill('Try Again');
+    labels[0] = '4 Packs Free';
+
+    drawWheel();
+
+    spinButton.addEventListener('click', spin);
+
+    function drawWheel() {
+        for (let i = 0; i < slices; i++) {
+            ctx.beginPath();
+            ctx.moveTo(150, 150);
+            ctx.arc(150, 150, 150, (startAngle + i * sliceDeg) * Math.PI / 180, (startAngle + (i + 1) * sliceDeg) * Math.PI / 180);
+            ctx.closePath();
+            ctx.fillStyle = colors[i % 2];
+            ctx.fill();
+            ctx.stroke();
+
+            // Add text
+            ctx.save();
+            ctx.translate(150, 150);
+            ctx.rotate(((startAngle + i * sliceDeg) + sliceDeg / 2) * Math.PI / 180);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#000";
+            ctx.font = 'bold 16px sans-serif';
+            ctx.fillText(labels[i], 140, 0);
+            ctx.restore();
+        }
+
+        // Draw arrow
+        ctx.fillStyle = "#000";
+        ctx.beginPath();
+        ctx.moveTo(150, 0);
+        ctx.lineTo(140, 20);
+        ctx.lineTo(160, 20);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    function spin() {
+        spinAngleStart = Math.random() * 10 + 10;
+        spinTime = 0;
+        rotateWheel();
+        spinButton.disabled = true;
+    }
+
+    function rotateWheel() {
+        spinTime += 30;
+        if (spinTime >= spinTimeTotal) {
+            stopRotateWheel();
+            return;
+        }
+        const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+        startAngle += (spinAngle * Math.PI / 180);
+        drawWheel();
+        spinTimeout = setTimeout(rotateWheel, 30);
+    }
+
+    function stopRotateWheel() {
+        clearTimeout(spinTimeout);
+        const degrees = startAngle * 180 / Math.PI % 360;
+        const arcd = sliceDeg;
+        const index = Math.floor((360 - degrees % 360) / arcd);
+        ctx.save();
+        ctx.font = 'bold 30px sans-serif';
+        const result = labels[index % slices];
+        setTimeout(() => {
+            if (result === '4 Packs Free') {
+                document.getElementById('formPopup').style.display = 'flex';
+            } else {
+                document.getElementById('popupMessage').innerText = 'Unfortunately, you are not a winner but you can still check out Plant Provisions on Purple Carrot.';
+                document.getElementById('popup').style.display = 'flex';
+            }
+        }, 500);
+        ctx.restore();
+    }
+
+    function easeOut(t, b, c, d) {
+        const ts = (t /= d) * t;
+        const tc = ts * t;
+        return b + c * (tc + -3 * ts + 3 * t);
+    }
+
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
+
+    function submitForm() {
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        if (firstName && lastName && email) {
+            // Here you can handle form submission, e.g., send data to your server or integrate with Google Forms
+            alert('Thank you! Your reward will be sent to your email.');
+            document.getElementById('formPopup').style.display = 'none';
+        } else {
+            alert('Please fill in all fields.');
+        }
+    }
+</script>
+
+</body>
+</html>
