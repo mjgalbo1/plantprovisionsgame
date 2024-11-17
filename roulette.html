@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Roulette Game with Faster Spin</title>
+    <title>Roulette Game with Google Form Integration</title>
     <style>
+        /* Your existing CSS styles */
         body {
             background-color: #f0f0f0; /* Background color */
             display: flex;
@@ -105,6 +106,15 @@
     </div>
 </div>
 
+<!-- Hidden form for Google Form submission -->
+<form id="googleForm" action="https://docs.google.com/forms/d/1P7pWADsjHuX6KQgDcu8vmoWXSG_vxQuQD3T5NVS3onY/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+    <input type="text" name="entry.719555311" id="gFirstName">
+    <input type="text" name="entry.1766086927" id="gLastName">
+    <input type="email" name="entry.1577820298" id="gEmail">
+    <input type="submit" value="Submit">
+</form>
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
 <script>
     const wheel = document.getElementById('wheel');
     const spinButton = document.getElementById('spinButton');
@@ -168,28 +178,28 @@
         document.getElementById('popup').style.display = 'none';
     }
 
-function submitForm() {
-    const firstName = encodeURIComponent(document.getElementById('firstName').value.trim());
-    const lastName = encodeURIComponent(document.getElementById('lastName').value.trim());
-    const email = encodeURIComponent(document.getElementById('email').value.trim());
+    // Updated submitForm function with Google Form integration
+    function submitForm() {
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const email = document.getElementById('email').value.trim();
 
-    if (firstName && lastName && email) {
-        // Replace with your Google Form URL and field names
-        const formUrl = 'https://docs.google.com/forms/d/e/d/1P7pWADsjHuX6KQgDcu8vmoWXSG_vxQuQD3T5NVS3onY/formResponse';
-        const params = `?entry.719555311=${firstname}&entry.1766086927=${lastname}&entry.1577820298=${email}`;
+        if (firstName && lastName && email) {
+            // Set the values in the hidden form
+            document.getElementById('gFirstName').value = firstName;
+            document.getElementById('gLastName').value = lastName;
+            document.getElementById('gEmail').value = email;
 
-        fetch(formUrl + params, { method: 'POST', mode: 'no-cors' })
-            .then(() => {
-                alert('Thank you! Your reward will be sent to your email.');
-                document.getElementById('formPopup').style.display = 'none';
-            })
-            .catch(() => {
-                alert('There was an error submitting the form.');
-            });
-    } else {
-        alert('Please fill in all fields.');
+            // Submit the form
+            document.getElementById('googleForm').submit();
+
+            // Show a success message
+            alert('Thank you! Your reward will be sent to your email.');
+            document.getElementById('formPopup').style.display = 'none';
+        } else {
+            alert('Please fill in all fields.');
+        }
     }
-}
 </script>
 
 </body>
