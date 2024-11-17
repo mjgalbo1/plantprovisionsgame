@@ -168,18 +168,28 @@
         document.getElementById('popup').style.display = 'none';
     }
 
-    function submitForm() {
-        const firstName = document.getElementById('firstName').value.trim();
-        const lastName = document.getElementById('lastName').value.trim();
-        const email = document.getElementById('email').value.trim();
-        if (firstName && lastName && email) {
-            // Handle form submission here
-            alert('Thank you! Your reward will be sent to your email.');
-            document.getElementById('formPopup').style.display = 'none';
-        } else {
-            alert('Please fill in all fields.');
-        }
+function submitForm() {
+    const firstName = encodeURIComponent(document.getElementById('firstName').value.trim());
+    const lastName = encodeURIComponent(document.getElementById('lastName').value.trim());
+    const email = encodeURIComponent(document.getElementById('email').value.trim());
+
+    if (firstName && lastName && email) {
+        // Replace with your Google Form URL and field names
+        const formUrl = 'https://docs.google.com/forms/d/e/d/1P7pWADsjHuX6KQgDcu8vmoWXSG_vxQuQD3T5NVS3onY/formResponse';
+        const params = `?entry.1234567890=${firstName}&entry.0987654321=${lastName}&entry.1122334455=${email}`;
+
+        fetch(formUrl + params, { method: 'POST', mode: 'no-cors' })
+            .then(() => {
+                alert('Thank you! Your reward will be sent to your email.');
+                document.getElementById('formPopup').style.display = 'none';
+            })
+            .catch(() => {
+                alert('There was an error submitting the form.');
+            });
+    } else {
+        alert('Please fill in all fields.');
     }
+}
 </script>
 
 </body>
