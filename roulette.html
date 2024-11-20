@@ -63,7 +63,7 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        #popup, #formPopup {
+        #popup {
             position: fixed;
             top: 0;
             left: 0;
@@ -74,23 +74,23 @@
             align-items: center;
             justify-content: center;
         }
-        #popupContent, #formContent {
+        #popupContent {
             background-color: #fff;
             padding: 20px;
             text-align: center;
             max-width: 90%;
             margin: 0 auto;
         }
-        #popupContent button, #formContent button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-        #formContent input {
+        #popupContent input {
             display: block;
             margin: 10px auto;
             padding: 8px;
             width: 80%;
+        }
+        #popupContent button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -108,18 +108,13 @@
 <div id="popup">
     <div id="popupContent">
         <p id="popupMessage"></p>
-        <button onclick="closePopup()">OK</button>
-    </div>
-</div>
-
-<div id="formPopup">
-    <div id="formContent">
-        <p>Congratulations! Please enter your details:</p>
-        <input type="text" id="firstName" placeholder="First Name" required>
-        <input type="text" id="lastName" placeholder="Last Name" required>
-        <input type="email" id="email" placeholder="Email Address" required>
-        <input type="text" id="phoneNumber" placeholder="Phone Number" required>
-        <button onclick="submitForm()">Submit</button>
+        <div id="formContainer" style="display: none;">
+            <input type="text" id="firstName" placeholder="First Name" required>
+            <input type="text" id="lastName" placeholder="Last Name" required>
+            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="text" id="phoneNumber" placeholder="Phone Number" required>
+            <button onclick="submitForm()">Submit</button>
+        </div>
     </div>
 </div>
 
@@ -171,9 +166,12 @@
                     const result = labels[index];
 
                     if (result === '4 Packs Free') {
-                        document.getElementById('formPopup').style.display = 'flex';
+                        document.getElementById('popupMessage').innerText = 'Congratulations! You won 4 packs free!';
+                        document.getElementById('formContainer').style.display = 'block';
+                        document.getElementById('popup').style.display = 'flex';
                     } else {
                         document.getElementById('popupMessage').innerText = 'Unfortunately, you are not a winner but you can still get one pack free on Purple Carrot. Fill out the form below and we\'ll reach out to you with instructions on how to redeem.';
+                        document.getElementById('formContainer').style.display = 'block';
                         document.getElementById('popup').style.display = 'flex';
                     }
                 }
@@ -188,10 +186,6 @@
     }
 
     spinButton.addEventListener('click', spin);
-
-    function closePopup() {
-        document.getElementById('popup').style.display = 'none';
-    }
 
     function submitForm() {
         const firstName = document.getElementById('firstName').value.trim();
@@ -208,7 +202,7 @@
             document.getElementById('googleForm').submit();
 
             alert('Thank you! Your reward will be sent to your email.');
-            document.getElementById('formPopup').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
         } else {
             alert('Please fill in all fields.');
         }
