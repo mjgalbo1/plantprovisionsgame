@@ -5,7 +5,6 @@
     <title>Roulette Game with Background</title>
     <style>
         body {
-            /* Apply the radial gradient background */
             background: radial-gradient(circle at 50% 50%, #fff7ad, #ffa9f9);
             display: flex;
             align-items: center;
@@ -22,7 +21,7 @@
         #boxImage {
             width: 100%;
             display: block;
-            margin-top: -100px; /* Move the box image up by 25px */
+            margin-top: -100px;
         }
         #wheelContainer {
             position: absolute;
@@ -50,7 +49,7 @@
         }
         #spinButton {
             position: absolute;
-            top: calc(50% + 150px); /* Position below the wheel */
+            top: calc(50% + 150px);
             left: 50%;
             transform: translateX(-50%);
             cursor: pointer;
@@ -64,7 +63,6 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        /* Popups and other styles remain the same */
         #popup, #formPopup {
             position: fixed;
             top: 0;
@@ -107,7 +105,6 @@
     <button id="spinButton"></button>
 </div>
 
-<!-- Popups and other HTML elements remain the same -->
 <div id="popup">
     <div id="popupContent">
         <p id="popupMessage"></p>
@@ -121,30 +118,29 @@
         <input type="text" id="firstName" placeholder="First Name" required>
         <input type="text" id="lastName" placeholder="Last Name" required>
         <input type="email" id="email" placeholder="Email Address" required>
+        <input type="text" id="phoneNumber" placeholder="Phone Number" required>
         <button onclick="submitForm()">Submit</button>
     </div>
 </div>
 
-<!-- Hidden form for Google Form submission -->
 <form id="googleForm" action="https://docs.google.com/forms/d/1P7pWADsjHuX6KQgDcu8vmoWXSG_vxQuQD3T5NVS3onY/formResponse" method="POST" target="hidden_iframe" style="display:none;">
     <input type="text" name="entry.719555311" id="gFirstName">
     <input type="text" name="entry.1766086927" id="gLastName">
     <input type="email" name="entry.1577820298" id="gEmail">
+    <input type="text" name="entry.230500736" id="gPhoneNumber">
     <input type="submit" value="Submit">
 </form>
 <iframe name="hidden_iframe" style="display:none;"></iframe>
 
 <script>
-    // Your existing JavaScript code remains the same
     const wheel = document.getElementById('wheel');
     const spinButton = document.getElementById('spinButton');
     const slices = 10;
     const sliceDeg = 360 / slices;
-    const duration = 5000; // 5 seconds
+    const duration = 5000;
     let deg = 0;
     let canSpin = true;
 
-    // Labels for each slice
     const labels = Array(10).fill('Try Again');
     labels[0] = '4 Packs Free';
 
@@ -154,7 +150,7 @@
             spinButton.disabled = true;
 
             const initialDeg = deg % 360;
-            const extraSpins = Math.floor(Math.random() * (15 - 10 + 1)) + 10; // Random between 10 and 15
+            const extraSpins = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
             const finalDeg = initialDeg + extraSpins * 360 + Math.random() * 360;
 
             const startTime = performance.now();
@@ -170,7 +166,6 @@
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
-                    // Calculate the result
                     const actualDeg = deg % 360;
                     const index = Math.floor(((actualDeg + (sliceDeg / 2)) % 360) / sliceDeg);
                     const result = labels[index];
@@ -178,7 +173,7 @@
                     if (result === '4 Packs Free') {
                         document.getElementById('formPopup').style.display = 'flex';
                     } else {
-                        document.getElementById('popupMessage').innerText = 'Unfortunately, you are not a winner but you can still check out Plant Provisions on Purple Carrot.';
+                        document.getElementById('popupMessage').innerText = 'Unfortunately, you are not a winner but you can still get one pack free on Purple Carrot. Fill out the form below and we\'ll reach out to you with instructions on how to redeem.';
                         document.getElementById('popup').style.display = 'flex';
                     }
                 }
@@ -198,22 +193,20 @@
         document.getElementById('popup').style.display = 'none';
     }
 
-    // Updated submitForm function with Google Form integration
     function submitForm() {
         const firstName = document.getElementById('firstName').value.trim();
         const lastName = document.getElementById('lastName').value.trim();
         const email = document.getElementById('email').value.trim();
+        const phoneNumber = document.getElementById('phoneNumber').value.trim();
 
-        if (firstName && lastName && email) {
-            // Set the values in the hidden form
+        if (firstName && lastName && email && phoneNumber) {
             document.getElementById('gFirstName').value = firstName;
             document.getElementById('gLastName').value = lastName;
             document.getElementById('gEmail').value = email;
+            document.getElementById('gPhoneNumber').value = phoneNumber;
 
-            // Submit the form
             document.getElementById('googleForm').submit();
 
-            // Show a success message
             alert('Thank you! Your reward will be sent to your email.');
             document.getElementById('formPopup').style.display = 'none';
         } else {
