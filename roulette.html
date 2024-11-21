@@ -113,16 +113,25 @@
             <input type="text" id="lastName" placeholder="Last Name" required>
             <input type="email" id="email" placeholder="Email Address" required>
             <input type="text" id="phoneNumber" placeholder="Phone Number" required>
-            <button onclick="submitForm()">Submit</button>
+            <button id="submitButton" onclick="submitForm()">Submit</button>
         </div>
     </div>
 </div>
 
-<form id="googleForm" action="https://docs.google.com/forms/d/1P7pWADsjHuX6KQgDcu8vmoWXSG_vxQuQD3T5NVS3onY/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+<!-- Two forms: one for winners and one for non-winners -->
+<form id="winnerForm" action="https://docs.google.com/forms/d/1P7pWADsjHuX6KQgDcu8vmoWXSG_vxQuQD3T5NVS3onY/formResponse" method="POST" target="hidden_iframe" style="display:none;">
     <input type="text" name="entry.719555311" id="gFirstName">
     <input type="text" name="entry.1766086927" id="gLastName">
     <input type="email" name="entry.1577820298" id="gEmail">
     <input type="text" name="entry.230500736" id="gPhoneNumber">
+    <input type="submit" value="Submit">
+</form>
+
+<form id="nonWinnerForm" action="https://docs.google.com/forms/d/1gJb85RjBA2Gx0E3Di0PMyW5N-t41pYU79gK2xtvphok/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+    <input type="text" name="entry.719555311" id="gFirstNameNonWinner">
+    <input type="text" name="entry.1766086927" id="gLastNameNonWinner">
+    <input type="email" name="entry.1577820298" id="gEmailNonWinner">
+    <input type="text" name="entry.230500736" id="gPhoneNumberNonWinner">
     <input type="submit" value="Submit">
 </form>
 <iframe name="hidden_iframe" style="display:none;"></iframe>
@@ -138,6 +147,8 @@
 
     const labels = Array(10).fill('Try Again');
     labels[0] = '4 Packs Free';
+
+    let isWinner = false;
 
     function spin() {
         if (canSpin) {
@@ -166,14 +177,15 @@
                     const result = labels[index];
 
                     if (result === '4 Packs Free') {
+                        isWinner = true;
                         document.getElementById('popupMessage').innerText = 'Congratulations! You won 4 packs free!';
-                        document.getElementById('formContainer').style.display = 'block';
-                        document.getElementById('popup').style.display = 'flex';
                     } else {
+                        isWinner = false;
                         document.getElementById('popupMessage').innerText = 'Unfortunately, you are not a winner but you can still get one pack free on Purple Carrot. Fill out the form below and we\'ll reach out to you with instructions on how to redeem.';
-                        document.getElementById('formContainer').style.display = 'block';
-                        document.getElementById('popup').style.display = 'flex';
                     }
+
+                    document.getElementById('formContainer').style.display = 'block';
+                    document.getElementById('popup').style.display = 'flex';
                 }
             }
 
@@ -194,14 +206,21 @@
         const phoneNumber = document.getElementById('phoneNumber').value.trim();
 
         if (firstName && lastName && email && phoneNumber) {
-            document.getElementById('gFirstName').value = firstName;
-            document.getElementById('gLastName').value = lastName;
-            document.getElementById('gEmail').value = email;
-            document.getElementById('gPhoneNumber').value = phoneNumber;
+            if (isWinner) {
+                document.getElementById('gFirstName').value = firstName;
+                document.getElementById('gLastName').value = lastName;
+                document.getElementById('gEmail').value = email;
+                document.getElementById('gPhoneNumber').value = phoneNumber;
+                document.getElementById('winnerForm').submit();
+            } else {
+                document.getElementById('gFirstNameNonWinner').value = firstName;
+                document.getElementById('gLastNameNonWinner').value = lastName;
+                document.getElementById('gEmailNonWinner').value = email;
+                document.getElementById('gPhoneNumberNonWinner').value = phoneNumber;
+                document.getElementById('nonWinnerForm').submit();
+            }
 
-            document.getElementById('googleForm').submit();
-
-            alert('Thank you! Your reward will be sent to your email.');
+            alert('Thank you! Your information has been submitted.');
             document.getElementById('popup').style.display = 'none';
         } else {
             alert('Please fill in all fields.');
